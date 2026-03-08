@@ -5,6 +5,10 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
+app.use((req, res, next) => {
+  res.setHeader("Strict-Transport-Security", "max-age=300; includeSubDomains");
+  next();
+});
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
