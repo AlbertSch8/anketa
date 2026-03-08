@@ -7,6 +7,7 @@ const path = require("path");
 const app = express();
 app.use((req, res, next) => {
   res.setHeader("Strict-Transport-Security", "max-age=300; includeSubDomains");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'");
   next();
 });
 app.use(express.urlencoded({ extended: true }));
