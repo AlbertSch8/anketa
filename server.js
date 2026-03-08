@@ -181,9 +181,9 @@ function page(title, body) {
     position: fixed;
     top: 0; left: 0; right: 0;
     height: 56px;
-    background: rgba(10,10,20,0.85);
+    background: rgba(15,15,30,0.95);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 2px solid #e94560;
     display: flex;
     align-items: center;
     justify-content: space-between;
