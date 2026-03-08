@@ -176,10 +176,48 @@ function page(title, body) {
   .footer a:hover { color: #e0e0e0; }
   .footer svg { width: 15px; height: 15px; fill: #aaa; flex-shrink: 0; }
   .footer a:hover svg { fill: #e0e0e0; }
-  body { padding-bottom: 60px; }
+  body { padding-bottom: 60px; padding-top: 70px; }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(10,10,20,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 100;
+  }
+  .nav-brand {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e94560;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+  }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.88rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { background: rgba(255,255,255,0.08); color: #e0e0e0; }
+  .nav-links a.active { background: rgba(233,69,96,0.15); color: #e94560; }
 </style>
 </head>
 <body>
+<nav>
+  <a class="nav-brand" href="/">📊 Anketa</a>
+  <div class="nav-links">
+    <a href="/" class="${title === 'Anketa' ? 'active' : ''}">Hlasovat</a>
+    <a href="/results" class="${title === 'Výsledky' ? 'active' : ''}">Výsledky</a>
+  </div>
+</nav>
 <div class="card">
 <h1>${title}</h1>
 ${body}
