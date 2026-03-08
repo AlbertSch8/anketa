@@ -214,9 +214,23 @@ app.post("/vote", (req, res) => {
 app.get("/results", (req, res) => {
   const data = loadData();
 
-  const rows = data.options.map((opt, i) =>
-    `<li>${opt}: ${data.votes[i]} hlasů</li>`
-  ).join("");
+  const total = data.votes.reduce((a, b) => a + b, 0);
+
+  const colors = ["#e94560", "#0f3460", "#533483", "#e94560cc", "#16213e"];
+
+  const bars = data.options.map((opt, i) => {
+    const votes = data.votes[i];
+    const pct = total > 0 ? Math.round((votes / total) * 100) : 0;
+    const color = colors[i % colors.length];
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${opt}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <div class="bar-info">${votes} hlasů &nbsp;<span class="bar-pct">${pct}%</span></div>
+      </div>`;
+  }).join("");
 
   const githubBtn = `
     <a class="btn btn-github" href="https://github.com/AlbertSch8/anketa/issues" target="_blank" rel="noopener">
@@ -224,7 +238,34 @@ app.get("/results", (req, res) => {
       Nahlásit problém
     </a>`;
 
-  res.send(page("Výsledky", `<ul>${rows}</ul><div class="links"><a class="btn btn-secondary" href="/">Zpět na anketu</a>${githubBtn}</div>`));
+  res.send(page("Výsledky", `
+    <style>
+      .bar-row { margin-bottom: 18px; }
+      .bar-label { font-size: 0.9rem; color: #ccc; margin-bottom: 5px; }
+      .bar-track {
+        background: rgba(255,255,255,0.08);
+        border-radius: 8px;
+        height: 28px;
+        overflow: hidden;
+        width: 100%;
+      }
+      .bar-fill {
+        height: 100%;
+        border-radius: 8px;
+        transition: width 0.8s ease;
+        min-width: ${total > 0 ? "2px" : "0"};
+      }
+      .bar-info { font-size: 0.88rem; color: #aaa; margin-top: 4px; }
+      .bar-pct { color: #e94560; font-weight: 600; }
+      .total-info { font-size: 0.85rem; color: #888; margin-bottom: 20px; }
+    </style>
+    <p class="total-info">Celkem hlasů: <strong style="color:#e0e0e0">${total}</strong></p>
+    <div class="chart">${bars}</div>
+    <div class="links" style="margin-top:24px">
+      <a class="btn btn-secondary" href="/">Zpět na anketu</a>
+      ${githubBtn}
+    </div>
+  `));
 });
 
 app.get("/reset", (req, res) => {
