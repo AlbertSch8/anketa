@@ -32,7 +32,8 @@ function ensureVoterCookie(req, res) {
     res.cookie("voter_id", voterId, {
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 365
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+      secure: process.env.NODE_ENV === "production"
     });
   }
   return voterId;
