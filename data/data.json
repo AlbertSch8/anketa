@@ -5,6 +5,12 @@
     "11–30 (už to trochu žije vlastním životem)",
     "31–80 (vyhledávání je moje UI)"
   ],
-  "votes": [0, 0, 0],
-  "voters": {}
+  "votes": [
+    0,
+    1,
+    0
+  ],
+  "voters": {
+    "ac02d6e1-9e96-43bf-bc83-322f4ec85f2e": true
+  }
 }
