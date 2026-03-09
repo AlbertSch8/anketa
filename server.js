@@ -216,6 +216,7 @@ function page(title, body) {
   <div class="nav-links">
     <a href="/" class="${title === 'Anketa' ? 'active' : ''}">Hlasovat</a>
     <a href="/results" class="${title === 'Výsledky' ? 'active' : ''}">Výsledky</a>
+    <a href="/about" class="${title === 'O ankete' ? 'active' : ''}">O ankete</a>
   </div>
 </nav>
 <div class="card">
@@ -320,6 +321,57 @@ app.get("/results", (req, res) => {
     <div class="chart">${bars}</div>
     <div class="links" style="margin-top:24px">
       <a class="btn btn-secondary" href="/">Zpět na anketu</a>
+    </div>
+  `));
+});
+
+app.get("/about", (req, res) => {
+  const data = loadData();
+  const totalVotes = data.votes.reduce((a, b) => a + b, 0);
+  const totalVoters = Object.keys(data.voters || {}).length;
+
+  res.send(page("O ankete", `
+    <style>
+      .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+      .info-box {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        padding: 16px 18px;
+        text-align: center;
+      }
+      .info-box .val { font-size: 2rem; font-weight: 700; color: #e94560; line-height: 1.1; }
+      .info-box .lbl { font-size: 0.8rem; color: #888; margin-top: 4px; }
+      .desc { font-size: 0.95rem; color: #ccc; line-height: 1.7; margin-bottom: 20px; }
+      .desc strong { color: #e0e0e0; }
+      .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 10px; }
+    </style>
+
+    <p class="desc">
+      Tato anketa zjišťuje, kolik otevřených záložek v prohlížeči považují uživatelé za normální.
+      Každý návštěvník může hlasovat <strong>právě jednou</strong> – hlasy jsou ukládány anonymně pomocí cookie.
+    </p>
+
+    <p class="section-title">Statistiky</p>
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="val">${totalVotes}</div>
+        <div class="lbl">celkem hlasů</div>
+      </div>
+      <div class="info-box">
+        <div class="val">${data.options.length}</div>
+        <div class="lbl">možností</div>
+      </div>
+    </div>
+
+    <p class="section-title">Možnosti ankety</p>
+    <ul style="margin-bottom:20px">
+      ${data.options.map((opt, i) => `<li>${opt}</li>`).join('')}
+    </ul>
+
+    <div class="links">
+      <a class="btn btn-primary" href="/">Hlasovat</a>
+      <a class="btn btn-secondary" href="/results">Výsledky</a>
     </div>
   `));
 });
