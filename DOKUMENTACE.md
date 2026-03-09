@@ -15,6 +15,14 @@ Aplikace splňuje požadavky zadání:
 - reset hlasování je chráněn serverovým tokenem
 - data jsou sdílena mezi všemi uživateli
 
+Aplikace dále obsahuje:
+- moderní tmavý vzhled s CSS stylingem
+- navigační hlavičku s odkazy na všechny stránky
+- vizualizaci výsledků formou sloupcového grafu s procenty
+- stránku „O ankete" s popisem a statistikami
+- fixní patičku s odkazem na GitHub Issues pro nahlášení problémů
+- bezpečnostní hlavičky (HSTS, CSP, Secure cookie flag)
+
 ---
 
 ## 2. Použité technologie
@@ -100,8 +108,13 @@ Postup:
 ---
 
 ### GET /results
-Zobrazí aktuální výsledky hlasování.
+Zobrazí aktuální výsledky hlasování formou sloupcového grafu s procenty a počty hlasů.
 Je dostupný i bez předchozího hlasování.
+
+---
+
+### GET /about
+Zobrazí stránku s informacemi o ankete – popis, aktuální statistiky (počet hlasů, počet možností) a seznam všech možností.
 
 ---
 
@@ -150,13 +163,34 @@ Bez správného tokenu není možné hlasy resetovat.
 
 ---
 
-## 8. Ukládání dat
+## 8. Bezpečnost
 
-Data jsou ukládána do souboru:
+### HSTS (HTTP Strict Transport Security)
+Aplikace odesílá hlavičku:
+```
+Strict-Transport-Security: max-age=300; includeSubDomains
+```
+Chrání před downgrade útoky z HTTPS na HTTP.
 
+### Content-Security-Policy (CSP)
+Aplikace odesílá hlavičku:
+```
+Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'
+```
+Chrání před XSS útoky a načítáním škodlivého obsahu.
 
-data/data.json
+### Secure cookie flag
+Cookie `voter_id` má v produkčním prostředí nastaven flag `Secure`:
+```js
+secure: process.env.NODE_ENV === "production"
+```
+Cookie je přenášena pouze přes HTTPS, lokálně funguje přes HTTP.
 
+---
+
+## 9. Ukládání dat
+
+Data jsou ukládána do souboru `data/data.json`.
 
 Příklad struktury:
 
@@ -164,55 +198,82 @@ Příklad struktury:
 {
   "question": "Otázka",
   "options": ["A", "B", "C"],
-  "votes": {
-    "A": 0,
-    "B": 0,
-    "C": 0
-  },
-  "voters": []
+  "votes": [0, 0, 0],
+  "voters": {}
 }
+```
 
 Tento soubor je sdílený mezi všemi uživateli aplikace.
 
-9. Nasazení aplikace
+---
+
+## 10. Uživatelské rozhraní
+
+### Navigační hlavička
+Fixní horní lišta zobrazená na všech stránkách. Obsahuje:
+- název aplikace (logo) odkazující na hlavní stránku
+- navigační odkazy: Hlasovat, Výsledky, O ankete
+- aktivní stránka je zvýrazněna červeně
+
+### Patička
+Fixní spodní lišta zobrazená na všech stránkách. Obsahuje odkaz „Nahlásit problém" odkazující na GitHub Issues projektu:
+https://github.com/AlbertSch8/anketa/issues
+
+### Hlavní stránka (/)
+- zobrazuje otázku a možnosti hlasování
+- po hlasování jsou možnosti deaktivovány
+- informuje uživatele o stavu hlasování
+
+### Výsledky (/results)
+- horizontální sloupcový graf s animací
+- procentuální podíl každé možnosti
+- počet hlasů u každé možnosti
+- celkový počet hlasů
+
+### O ankete (/about)
+- popis účelu ankety
+- statistiky (počet hlasů, počet možností)
+- seznam všech možností
+- tlačítka pro přechod na hlasování a výsledky
+
+---
+
+## 11. Nasazení aplikace
 
 Aplikace je nasazena na platformě Render.
 
-Veřejná URL:
-https://anketa-odz6.onrender.com
+**Veřejná URL:** https://anketa-odz6.onrender.com
 
-Build command:
-npm install
+**Build command:** `npm install`
 
-Start command:
-npm start
+**Start command:** `npm start`
 
-10. Testovací scénář
+**Environment proměnné:**
+- `RESET_TOKEN` – token pro reset hlasování
+- `NODE_ENV=production` – aktivuje Secure flag u cookies
 
-Uživatel otevře hlavní stránku.
+---
 
-Hlasuje pro jednu možnost.
+## 12. Testovací scénář
 
-Je přesměrován na výsledky.
+1. Uživatel otevře hlavní stránku.
+2. Hlasuje pro jednu možnost.
+3. Je přesměrován na výsledky – zobrazí se graf s procenty.
+4. Pokusí se hlasovat znovu → hlas je odmítnut.
+5. Jiný uživatel (jiný prohlížeč/zařízení) může hlasovat.
+6. Admin zadá správný reset token → hlasy se vynulují.
 
-Pokusí se hlasovat znovu → hlas je odmítnut.
+---
 
-Jiný uživatel může hlasovat.
-
-Admin zadá správný reset token → hlasy se vynulují.
-
-11. Závěr
+## 13. Závěr
 
 Aplikace splňuje všechny požadavky zadání:
 
-webová aplikace
-
-serverová logika
-
-sdílená data
-
-ochrana proti vícenásobnému hlasování
-
-reset chráněný tokenem
-
-veřejné nasazení
+- webová aplikace s serverovou logikou
+- sdílená data mezi všemi uživateli
+- ochrana proti vícenásobnému hlasování
+- reset chráněný tokenem
+- veřejné nasazení na Render.com
+- moderní responzivní UI s navigací a grafem výsledků
+- bezpečnostní hlavičky (HSTS, CSP, Secure cookie)
+- GitHub Issues tlačítko pro zpětnou vazbu
